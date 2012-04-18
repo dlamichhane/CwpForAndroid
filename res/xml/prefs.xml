@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/server_configuration">
+        <EditTextPreference android:title="@string/host_address" 
+            				android:defaultValue="@string/default_host" 
+            				android:key="@string/host_address_key" />
+            				<!-- android:summary="@string/host_summary" -->
+        
+        <EditTextPreference android:title="@string/port_number" 
+            				android:defaultValue="@string/default_port" 
+            				android:key="@string/port_number_key" />
+            				<!-- android:summary="@string/port_summary" -->
+        
+        <CheckBoxPreference android:title="@string/beep" 
+            				android:key="@string/beep_key" 
+            				android:defaultValue="@string/default_beep"/>
+    </PreferenceCategory>
+    
+
+</PreferenceScreen>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="image_view1">Click to send signal</string>
+    <string name="app_name">CwpForAndroid</string>
+    <string name="prefs">Preferences</string>
+    <string name="host_address">Host Address</string>
+    <string name="host_address_key">Host_Address</string>
+    <string name="beep">Beep</string>
+    <string name="beep_key">Beep_key</string>
+    <string name="server_configuration">Server Configuration</string>
+    <string name="port_number">Port Number</string>
+    <string name="port_number_key">Port_Number</string>
+    <string name="default_host">cwp.opimobi.com</string>
+    <string name="default_port">20000</string>
+    <string name="default_beep">true</string>
+    <string name="host_summary">cwp.opimobi.com</string>
+    <string name="port_summary">20000</string>
+
+</resources>
