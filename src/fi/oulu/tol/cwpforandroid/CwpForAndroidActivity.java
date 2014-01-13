@@ -1,14 +1,17 @@
 package fi.oulu.tol.cwpforandroid;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.os.Debug;
+import android.os.StrictMode;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,29 +28,33 @@ public class CwpForAndroidActivity extends Activity {
 	/** Called when the activity is first created. */
 	private ImageView image;
 	private EditText editText;
+	private ToneGenerator toneGenerator = new ToneGenerator(
+			AudioManager.STREAM_MUSIC, 50);
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.main);
+		Debug.startMethodTracing();
+		Debug.startMethodTracing("CWPClient");
+		Debug.startAllocCounting();
 
 		image = (ImageView) findViewById(R.id.imageView1);
 
 		image.setOnTouchListener(new OnTouchListener() {
 
 			public boolean onTouch(View v, MotionEvent event) {
-				ToneGenerator toneGenerator = new ToneGenerator(
-						AudioManager.STREAM_MUSIC, 50);
+		
 				switch (event.getActionMasked()) {
 
 				case MotionEvent.ACTION_DOWN: {
 					image.setImageResource(R.drawable.icon2);
-					toneGenerator.startTone(ToneGenerator.TONE_DTMF_6);
-					Toast toast = Toast.makeText(getApplicationContext(),
-							"I am pressed", Toast.LENGTH_SHORT);
-					toast.show();
+					toneGenerator.startTone(ToneGenerator.TONE_DTMF_4);
 					toneGenerator.stopTone();
+					EventLogger.logEventStarted("Message arrived", System.currentTimeMillis());
+					EventLogger.logMemoryUsage("Memory");
 
 				}
 					;
@@ -55,9 +62,7 @@ public class CwpForAndroidActivity extends Activity {
 
 				case MotionEvent.ACTION_UP: {
 					image.setImageResource(R.drawable.icon1);
-					Toast toast = Toast.makeText(getApplicationContext(),
-							"I am released", Toast.LENGTH_SHORT);
-					toast.show();
+					EventLogger.logEventEnded("Signal playing now", System.currentTimeMillis());
 
 				}
 					;
@@ -75,6 +80,7 @@ public class CwpForAndroidActivity extends Activity {
 
 				return true;
 			}
+
 		});
 
 		editText = (EditText) findViewById(R.id.editText1);
@@ -112,4 +118,9 @@ public class CwpForAndroidActivity extends Activity {
 		return true;
 	}
 
+	protected void onDestroy(){
+		Debug.stopMethodTracing();
+		Debug.stopAllocCounting();
+		
+	}
 }

@@ -3,6 +3,7 @@ package fi.oulu.tol.cwpforandroid;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.StringTokenizer;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -137,24 +138,74 @@ public class PrefsActivity extends PreferenceActivity {
 
 					private boolean isHostReachable(String currentHostAddress) {
 
-						new Thread(new Runnable() {
-							public void run() {
-								try {
-									Log.d(TAG,
-											"Before sending the ping request");
-									status = InetAddress.getByName(
-											"cwp.opimobi.com")
-											.isReachable(3000);
-									Log.d(TAG, "Reachable, ping successful" + status);
-								} catch (UnknownHostException e) {
-									e.printStackTrace();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						}).start();
+						try {
+						       InetAddress address = InetAddress.getByName(currentHostAddress);
+						       int ipInt = parseNumericAddress(address.getHostAddress());
+								if (ipInt == 0)
+									return false;
 
+								byte[] ipByts = new byte[4];
+
+								ipByts[3] = (byte) (ipInt & 0xFF);
+								ipByts[2] = (byte) ((ipInt >> 8) & 0xFF);
+								ipByts[1] = (byte) ((ipInt >> 16) & 0xFF);
+								ipByts[0] = (byte) ((ipInt >> 24) & 0xFF);
+
+								InetAddress address2 = InetAddress.getByAddress(ipByts);
+								System.out.println("FFFFFFFFFFFFFFFF  "+address2.toString());
+						       
+						       
+						       status = address2.isReachable(3000); 
+						       System.out.println("Name: " + address2.getHostName());
+						       System.out.println("Addr: " + address2.getHostAddress());
+						       System.out.println("Reach: " + status);
+						     }
+						     catch (UnknownHostException e) {
+						       System.err.println("Unable to lookup"+ currentHostAddress);
+						     }
+						     catch (IOException e) {
+						       System.err.println("Unable to reach" + currentHostAddress);
+						     }
 						return status;
+					}
+
+					private int parseNumericAddress(String ipaddr) {
+						if (ipaddr == null || ipaddr.length() < 7 || ipaddr.length() > 15)
+							return 0;
+
+						// Check the address string, should be n.n.n.n format
+
+						StringTokenizer token = new StringTokenizer(ipaddr, ".");
+						if (token.countTokens() != 4)
+							return 0;
+
+						int ipInt = 0;
+
+						while (token.hasMoreTokens()) {
+
+							// Get the current token and convert to an integer value
+
+							String ipNum = token.nextToken();
+
+							try {
+
+								// Validate the current address part
+
+								int ipVal = Integer.valueOf(ipNum).intValue();
+								if (ipVal < 0 || ipVal > 255)
+									return 0;
+
+								// Add to the integer address
+
+								ipInt = (ipInt << 8) + ipVal;
+							} catch (NumberFormatException ex) {
+								return 0;
+							}
+						}
+
+						// Return the integer address
+
+						return ipInt;
 					}
 
 				});
